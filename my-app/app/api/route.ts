@@ -1,5 +1,5 @@
 // app/api/route.js 👈🏽
-
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 
@@ -7,64 +7,60 @@ import puppeteer from "puppeteer";
 export async function GET(request) {
   // Launch the browser and open a new blank page
   const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: {
-      width: 1080,
-      height: 1024,
-    },
+    headless: false,
   });
   const page = await browser.newPage();
 
   // Navigate the page to a URL
-  await page.goto(
-    "https://research.com/upcoming-conferences/computer-science",
-    { waitUntil: "domcontentloaded" }
-  );
+  await page.goto("https://research.com/upcoming-conferences/computer-science");
 
-  //   const result = await page.waitForSelector("#header");
-  //   console.log(result?.toString());
-  // return NextResponse.json({ message: "Hello World" , length: result}, { status: 200 });
+  try {
+    await page.waitForSelector("#rankingItems", {
+      timeout: 120000,
+      visible: true,
+    }); // Adjust the timeout as needed
 
-  //   await page.setContent(`
-  //     <div class="container">
-  //         <div class="child">A</div>
-  //         <div class="child">B</div>
-  //         <div class="child">C</div>
-  //     </div>
-  //     `);
+    const tableData = await page.evaluate(async () => {
+      const divRankingItems = document.getElementById("rankingItems");
 
-  //   let children = await page.$eval("[id='header']", (e) => {
-  //     console.log(e.tagName);
-  //     const data = [];
-  //     for (const child of e.children) {
-  //       data.push({ tagName: child.tagName, innerText: child.innerText });
-  //     }
-  //     return data;
-  //   });
-  //   console.log(children);
-  // Getting the element with ID 'unique-element'
-  //   const uniqueElement = await page.$("#rankingItems");
+      if (!divRankingItems) {
+        return [];
+      }
 
-  //   const uniqueElement = await page.waitForSelector("#rankingItems", {
-  //     timeout: 12000,
-  //   });
+      const listItem = divRankingItems.children;
 
-  //   console.log(uniqueElement);
+      let rs = [];
+      for (let i = 0; i < divRankingItems.children.length; i++) {
+        // query h4 -> a, get text and href
+        let objData: Record<string, any> = {
+          id: "",
+          name: "",
+          link: "",
+        };
 
-  //   const element = await page.evaluate(() => {
-  //     // executed in the browser
-  //     return document.querySelector("#rankingItems");
-  //   });
+        const elementA = listItem.item(i)?.querySelector("a");
+        if (elementA) {
+          objData.link = elementA.getAttribute("href");
+          objData.name = elementA.textContent;
 
-  //   const selector = "#rankingItems";
-  const selector = "#rankingItems";
-  const text = await page.evaluate(`
-  document.querySelector("${selector}").children.length
-    `);
+          rs.push(objData);
+        }
+      }
 
-  console.log(text); // => Example Domain
-  //   await browser.close();
-  return NextResponse.json({ message: "Hello World" }, { status: 200 });
+      return rs;
+    });
+
+    await browser.close();
+
+    return NextResponse.json(
+      { message: "Hello World", tableData },
+      { status: 200 }
+    );
+  } catch (error) {
+    await browser.close();
+
+    return NextResponse.json({ message: "error" }, { status: 500 });
+  }
 }
 
 // To handle a POST request to /api
