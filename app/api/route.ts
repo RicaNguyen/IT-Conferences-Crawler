@@ -2,7 +2,10 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import * as _ from "lodash";
-type Event = {
+import { MongoClient } from "mongodb";
+import { client, dbName } from "../db/mongo";
+
+export type Conferences = {
   id: string;
   name: string;
   link: string;
@@ -27,12 +30,14 @@ const MONTH2CHAR: Record<string, string> = {
   Dec: "12",
 };
 // To handle a GET request to /api
-export async function GET(request) {
+export async function GET() {
   // Launch the browser and open a new blank page
 
-  let result: Event[] = [];
+  let result: Conferences[] = [];
   const browser = await puppeteer.launch({
-    headless: false,
+    // = true, ko launch brower, chạy gầm
+    // = false, launch brower cho việc testing
+    headless: true,
   });
 
   const page = await browser.newPage();
@@ -41,8 +46,13 @@ export async function GET(request) {
     for (let pageNumber = 1; pageNumber <= 20; pageNumber++) {
       // Navigate the page to a URL
       const queryPageNumber = "?page=" + pageNumber;
+
+      // Tài liệu tham khảo: https://www.webshare.io/academy-article/puppeteer-wait-for-page-to-load
+      // Ta chỉ cần page load html content là đủ, ko cần load các css,async script
+
       await page.goto(
-        `https://dev.events/tech${pageNumber === 1 ? "" : queryPageNumber}`
+        `https://dev.events/tech${pageNumber === 1 ? "" : queryPageNumber}`,
+        { waitUntil: "domcontentloaded" }
       );
 
       try {
@@ -60,10 +70,10 @@ export async function GET(request) {
 
           const listItem = divEventsItems.children;
 
-          let rs: Event[] = [];
+          let rs: Conferences[] = [];
           for (let i = 4; i < divEventsItems.children.length; i++) {
             // query h4 -> a, get text and href
-            let objData: Event = {
+            let objData: Conferences = {
               id: "",
               name: "",
               link: "",
@@ -146,11 +156,58 @@ export async function GET(request) {
       }
     }
 
-    await browser.close();
     // loại bỏ các event không có link, name khỏi kq
     result = result.filter(
-      (eventItem: Event) => eventItem.id && eventItem.name
+      (eventItem: Conferences) => eventItem.id && eventItem.name
     );
+
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection("events");
+
+    await collection.deleteMany();
+    await collection.insertMany(result);
+    await client.close();
+
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].link) {
+        console.log("devlink", result[i].link);
+
+        await page.goto(result[i].link, { waitUntil: "domcontentloaded" });
+
+        const rootLink = await page.evaluate(async () => {
+          const aElement = document.querySelector(
+            'a[class="has-text-grey-light"]'
+          );
+
+          if (aElement) {
+            const rootLink = aElement.getAttribute("href");
+            return rootLink;
+          } else {
+            const iframeElement = document.querySelector("iframe");
+
+            if (iframeElement) {
+              const rootLink = iframeElement.getAttribute("src");
+              return rootLink;
+            }
+
+            return "";
+          }
+        });
+
+        console.log("rootLink", rootLink);
+        if (rootLink) {
+          result[i].link = rootLink;
+        }
+      }
+    }
+
+    await client.connect();
+    await collection.deleteMany();
+    await collection.insertMany(result);
+    await client.close();
+
+    await browser.close();
 
     const countryList = _.countBy(result, "country");
     return NextResponse.json(
@@ -164,12 +221,13 @@ export async function GET(request) {
     );
   } catch (error) {
     await browser.close();
+    console.log(error);
     return NextResponse.json({ message: "error" }, { status: 500 });
   }
 }
 
 // To handle a POST request to /api
-export async function POST(request) {
+export async function POST() {
   // Launch the browser and open a new blank page
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
