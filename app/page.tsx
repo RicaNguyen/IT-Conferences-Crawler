@@ -12,15 +12,43 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import DenseTable from "@/components/resultsearch";
+import ResultSearch from "@/components/resultsearch";
 import { client, dbName } from "./db/mongo";
+import { Conferences } from "./api/route";
+import { NUMBER_ITEM_PER_PAGE } from "@/const/const";
 
-export default async function Home() {
+export default async function Home(props) {
+  console.log(props);
+  let currentPageNumber = Number(props.searchParams.pageNumber) || 1;
+  if (currentPageNumber < 0) {
+    currentPageNumber = 1;
+  }
   await client.connect();
   const db = client.db(dbName);
   const collection = db.collection("events");
   const findResult = await collection.find({}).toArray();
-  console.log("Found documents =>", findResult);
+  let events = findResult.map((item): Conferences => {
+    return {
+      id: item.id,
+      name: item.name,
+      startDate: item.startDate,
+      endDate: item.endDate,
+      location: item.location,
+      link: item.link,
+      country: item.country,
+    };
+  });
+
+  const totalPage = Math.ceil(events.length / NUMBER_ITEM_PER_PAGE);
+
+  events = events.slice(
+    (currentPageNumber - 1) * NUMBER_ITEM_PER_PAGE,
+    currentPageNumber * NUMBER_ITEM_PER_PAGE
+  );
+
+  console.log("Found documents =>", findResult.length);
+  console.log("currentPageNumber", currentPageNumber, totalPage);
+
   return (
     <div>
       <ResponsiveAppBar />
@@ -104,7 +132,7 @@ export default async function Home() {
         </Typography>
       </Box>
       <Container sx={{ marginTop: 4 }}>
-        <DenseTable events={findResult} />
+        <ResultSearch events={events} totalPage={totalPage} />
       </Container>
     </div>
   );

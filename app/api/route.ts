@@ -43,7 +43,7 @@ export async function GET() {
   const page = await browser.newPage();
   try {
     // lấy 20 page đầu tiên
-    for (let pageNumber = 1; pageNumber <= 20; pageNumber++) {
+    for (let pageNumber = 1; pageNumber <= 1; pageNumber++) {
       // Navigate the page to a URL
       const queryPageNumber = "?page=" + pageNumber;
 
