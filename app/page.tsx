@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import ResponsiveAppBar from "../components/appbar";
 import SearchIcon from "@mui/icons-material/Search";
 import Grid from "@mui/material/Grid";
@@ -13,8 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import DenseTable from "@/components/resultsearch";
+import { client, dbName } from "./db/mongo";
 
-export default function Home() {
+export default async function Home() {
+  await client.connect();
+  const db = client.db(dbName);
+  const collection = db.collection("events");
+  const findResult = await collection.find({}).toArray();
+  console.log("Found documents =>", findResult);
   return (
     <div>
       <ResponsiveAppBar />
@@ -98,7 +104,7 @@ export default function Home() {
         </Typography>
       </Box>
       <Container sx={{ marginTop: 4 }}>
-        <DenseTable />
+        <DenseTable events={findResult} />
       </Container>
     </div>
   );
