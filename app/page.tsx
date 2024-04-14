@@ -1,6 +1,5 @@
 "use server";
 import ResponsiveAppBar from "../components/appbar";
-import SearchIcon from "@mui/icons-material/Search";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
 import IconButton from "@mui/material/IconButton";
@@ -16,9 +15,11 @@ import ResultSearch from "@/components/resultsearch";
 import { client, dbName } from "./db/mongo";
 import { Conferences } from "./api/route";
 import { NUMBER_ITEM_PER_PAGE } from "@/const/const";
+import SearchBox from "@/components/searchBox";
 
 export default async function Home(props) {
   console.log(props);
+  const searchItem = props.searchParams.searchItem || "";
   let currentPageNumber = Number(props.searchParams.pageNumber) || 1;
   if (currentPageNumber < 0) {
     currentPageNumber = 1;
@@ -38,6 +39,10 @@ export default async function Home(props) {
       country: item.country,
     };
   });
+
+  events = events.filter((user) =>
+    user.name.toLowerCase().includes(searchItem.toLowerCase())
+  );
 
   const totalPage = Math.ceil(events.length / NUMBER_ITEM_PER_PAGE);
 
@@ -105,18 +110,7 @@ export default async function Home(props) {
                   background: "white",
                 }}
               >
-                <TextField
-                  placeholder="Search"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton edge="end">
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <SearchBox />
               </FormControl>
             </>
           </Grid>
