@@ -2,22 +2,19 @@
 import ResponsiveAppBar from "../components/appbar";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
-import IconButton from "@mui/material/IconButton";
-import {
-  Box,
-  Container,
-  FormControl,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Container, FormControl, Typography } from "@mui/material";
 import ResultSearch from "@/components/resultsearch";
 import { client, dbName } from "./db/mongo";
 import { Conferences } from "./api/route";
 import { NUMBER_ITEM_PER_PAGE } from "@/const/const";
 import SearchBox from "@/components/searchBox";
 
-export default async function Home(props) {
+export type PageProps = {
+  params: Record<string, string>;
+  searchParams: Record<string, string>;
+};
+
+export default async function Home(props: PageProps) {
   console.log(props);
   const searchItem = props.searchParams.searchItem || "";
   let currentPageNumber = Number(props.searchParams.pageNumber) || 1;

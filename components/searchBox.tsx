@@ -9,10 +9,12 @@ export default function SearchBox() {
   const pathname = usePathname();
   const { replace } = useRouter();
   const params = new URLSearchParams(searchParams);
-  const [searchItem, setSearchItem] = useState(params.get("searchItem"));
+  const [searchItem, setSearchItem] = useState(params.get("searchItem") || "");
 
-  const handleInputChange = (e) => {
-    const searchTerm = e.target.value;
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    const searchTerm = event.target.value;
     setSearchItem(searchTerm);
   };
 
@@ -23,6 +25,8 @@ export default function SearchBox() {
     } else {
       params.delete("searchItem");
     }
+    // mỗi lần search theo keyword thì cần reset kết quả search về page = 1
+    params.delete("pageNumber");
     console.log(searchItem);
     replace(`${pathname}?${params.toString()}`);
     console.log(searchItem);
@@ -35,6 +39,13 @@ export default function SearchBox() {
       id="searchText"
       value={searchItem}
       onChange={handleInputChange}
+      onKeyDown={(e) => {
+        // handle press Enter Key thực hiện search như user click icon Search
+        // https://www.geeksforgeeks.org/how-to-get-the-enter-key-in-reactjs
+        if (e.key === "Enter") {
+          handleOnClickSearch();
+        }
+      }}
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">

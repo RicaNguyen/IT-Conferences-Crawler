@@ -1,22 +1,15 @@
 "use client";
 import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { dymmyData } from "@/const/dummydata";
 import { Conferences } from "@/app/api/route";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PublicIcon from "@mui/icons-material/Public";
 import Pagination from "@mui/material/Pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 export default function ResultSearch({
   events,
   totalPage,
@@ -78,21 +71,7 @@ export default function ResultSearch({
           </TableBody>
         </Table>
       </TableContainer> */}
-      <Stack
-        spacing={2}
-        marginTop={2}
-        justifyItems={"center"}
-        direction={"row"}
-        alignContent={"center"}
-        alignItems={"center"}
-      >
-        <Pagination
-          count={totalPage}
-          variant="outlined"
-          shape="rounded"
-          onChange={handleChange}
-        />
-      </Stack>
+
       <Grid container spacing={2}>
         {events.map((row, index) => (
           <Grid item xs={6} key={index}>
@@ -103,19 +82,19 @@ export default function ResultSearch({
                 </Typography>
 
                 <Stack alignItems="center" direction="row" gap={1}>
-                  <EventIcon />
+                  <EventIcon color="success" />
                   <Typography variant="body1">
                     {row.startDate} to {row.endDate}{" "}
                   </Typography>
                 </Stack>
 
                 <Stack alignItems="center" direction="row" gap={1}>
-                  <LocationOnIcon />
+                  <LocationOnIcon color="warning" />
                   <Typography variant="body1">{row.location}</Typography>
                 </Stack>
 
                 <Stack alignItems="center" direction="row" gap={1}>
-                  <PublicIcon />
+                  <PublicIcon color="info" />
                   <Typography
                     variant="body1"
                     component={"a"}
@@ -130,6 +109,16 @@ export default function ResultSearch({
           </Grid>
         ))}
       </Grid>
+
+      <Box
+        sx={{
+          margin: 4,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Pagination count={totalPage} onChange={handleChange} />
+      </Box>
     </>
   );
 }
