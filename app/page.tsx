@@ -52,18 +52,18 @@ export default async function Home(props: PageProps) {
   console.log("currentPageNumber", currentPageNumber, totalPage);
 
   return (
-    <div>
+    <div
+      style={{
+        backgroundImage: `url(images/background.png)`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        // height: "100vh",
+        padding: 6,
+      }}
+    >
       <ResponsiveAppBar />
-      <Box
-        style={{
-          // backgroundImage: `url(images/Background.jpg)`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          // height: "100vh",
-          padding: 6,
-        }}
-      >
+      <Box>
         <Typography
           textAlign="center"
           variant="h1"
@@ -72,7 +72,7 @@ export default async function Home(props: PageProps) {
         >
           IT CONFERENCES
         </Typography>
-        <Typography
+        {/* <Typography
           textAlign="center"
           variant="h4"
           sx={{ marginBottom: 2, marginTop: 2 }}
@@ -95,7 +95,7 @@ export default async function Home(props: PageProps) {
           color={"black"}
         >
           the IT Conferences Crawler
-        </Typography>
+        </Typography> */}
         <Grid container>
           <Grid item xs={4} />
           <Grid item xs={4}>
