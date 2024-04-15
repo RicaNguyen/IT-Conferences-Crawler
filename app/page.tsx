@@ -8,6 +8,8 @@ import { client, dbName } from "./db/mongo";
 import { Conferences } from "./api/route";
 import { NUMBER_ITEM_PER_PAGE } from "@/const/const";
 import SearchBox from "@/components/searchBox";
+import DrawerAppBar from "@/components/newappbar";
+import FilterConferencesEvent from "@/components/filter";
 
 export type PageProps = {
   params: Record<string, string>;
@@ -16,6 +18,10 @@ export type PageProps = {
 
 export default async function Home(props: PageProps) {
   console.log(props);
+  //get country
+  const countryItem = props.searchParams.countryItem || "";
+
+  //get searchITem
   const searchItem = props.searchParams.searchItem || "";
   let currentPageNumber = Number(props.searchParams.pageNumber) || 1;
   if (currentPageNumber < 0) {
@@ -37,8 +43,24 @@ export default async function Home(props: PageProps) {
     };
   });
 
-  events = events.filter((user) =>
-    user.name.toLowerCase().includes(searchItem.toLowerCase())
+  let countries = findResult.map((item): string => {
+    return item.country;
+  });
+  //remove duplicate countries item
+  let newcountries: string[] = [];
+  countries.forEach((item) => {
+    if (!newcountries.includes(item)) {
+      newcountries.push(item);
+    }
+  });
+  if (countryItem) {
+    events = events.filter((event) =>
+      countryItem.toLowerCase().includes(event.country.toLowerCase())
+    );
+  }
+
+  events = events.filter((event) =>
+    event.name.toLowerCase().includes(searchItem.toLowerCase())
   );
 
   const totalPage = Math.ceil(events.length / NUMBER_ITEM_PER_PAGE);
@@ -50,7 +72,12 @@ export default async function Home(props: PageProps) {
 
   console.log("Found documents =>", findResult.length);
   console.log("currentPageNumber", currentPageNumber, totalPage);
-
+  // country
+  // for( int i = 0; i<= CountQueuingStrategy.length;i++; ){
+  //   if(countries. contains(countrie[i])){
+  //     tenmang.remove();
+  //   }
+  // }
   return (
     <div
       style={{
@@ -113,16 +140,18 @@ export default async function Home(props: PageProps) {
           </Grid>
           <Grid item xs={4} />
         </Grid>
-        <Typography
+        {/* <Typography
           textAlign="center"
           variant="h6"
           sx={{ marginTop: 2 }}
           color={"black"}
         >
           Rica Nguyen
-        </Typography>
+        </Typography> */}
       </Box>
+
       <Container sx={{ marginTop: 4 }}>
+        <FilterConferencesEvent countries={newcountries} />
         <ResultSearch events={events} totalPage={totalPage} />
       </Container>
     </div>
