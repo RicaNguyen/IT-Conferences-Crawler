@@ -9,8 +9,8 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
 import { Grid } from "@mui/material";
-import { Conferences } from "@/app/api/route";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -23,23 +23,14 @@ const MenuProps = {
   },
 };
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
+function getStyles(
+  country: string,
+  filterByCountry: readonly string[],
+  theme: Theme
+) {
   return {
     fontWeight:
-      personName.indexOf(name) === -1
+      filterByCountry.indexOf(country) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
@@ -56,18 +47,25 @@ export default function FilterConferencesEvent({
   const { replace } = useRouter();
 
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState<string[]>([]);
+  const params = new URLSearchParams(searchParams);
 
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  let country: string[] = [];
+  if (params.get("countryItem")) {
+    country = params.get("countryItem")?.split(",") || [];
+  }
+  const [filterByCountry, setFilterByCountry] =
+    React.useState<string[]>(country);
+  const handleChangeCountry = (
+    event: SelectChangeEvent<typeof filterByCountry>
+  ) => {
     const {
       target: { value },
     } = event;
-    setPersonName(
+    setFilterByCountry(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
 
-    const params = new URLSearchParams(searchParams);
     if (value) {
       if (typeof value === "string") {
         params.set("countryItem", value);
@@ -75,7 +73,24 @@ export default function FilterConferencesEvent({
         params.set("countryItem", value.join(",")); // value.join(noi mang boi dau ",")
       }
     } else {
-      params.delete("country");
+      params.delete("countryItem");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  // timesort
+  const [typeSort, setTypeSort] = useState(params.get("typeSortItem") || "");
+
+  const handleChangeSort = (event: SelectChangeEvent<typeof typeSort>) => {
+    const {
+      target: { value },
+    } = event;
+    setTypeSort(value);
+
+    if (value) {
+      params.set("typeSortItem", value); // value.join(noi mang boi dau ",")
+    } else {
+      params.delete("typeSortItem");
     }
     replace(`${pathname}?${params.toString()}`);
   };
@@ -89,8 +104,8 @@ export default function FilterConferencesEvent({
             labelId="demo-multiple-chip-label"
             id="demo-multiple-chip"
             multiple
-            value={personName}
-            onChange={handleChange}
+            value={filterByCountry}
+            onChange={handleChangeCountry}
             input={<OutlinedInput id="select-multiple-chip" label="Country" />}
             renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -101,13 +116,13 @@ export default function FilterConferencesEvent({
             )}
             MenuProps={MenuProps}
           >
-            {countries.map((name) => (
+            {countries.map((country) => (
               <MenuItem
-                key={name}
-                value={name}
-                style={getStyles(name, personName, theme)}
+                key={country}
+                value={country}
+                style={getStyles(country, filterByCountry, theme)}
               >
-                {name}
+                {country}
               </MenuItem>
             ))}
           </Select>
@@ -115,7 +130,17 @@ export default function FilterConferencesEvent({
       </Grid>
       <Grid item xs={6}>
         <FormControl sx={{ m: 1 }} fullWidth>
-          <InputLabel id="demo-multiple-chip-label">Calendar</InputLabel>
+          <InputLabel id="demo-multiple-chip-label">Time</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={typeSort}
+            onChange={handleChangeSort}
+          >
+            <MenuItem value={""}>All</MenuItem>
+            <MenuItem value={"Latest"}>Latest</MenuItem>
+            <MenuItem value={"Upcoming"}>Upcoming</MenuItem>
+          </Select>
         </FormControl>
       </Grid>
     </Grid>

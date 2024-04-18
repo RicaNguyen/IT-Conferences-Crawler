@@ -34,44 +34,6 @@ export default function ResultSearch({
 
   return (
     <>
-      {/* <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Name Conferences</TableCell>
-              <TableCell sx={{ fontWeight: 700 }} align="left">
-                Location
-              </TableCell>
-              <TableCell sx={{ fontWeight: 700 }} align="left">
-                Start Time
-              </TableCell>
-              <TableCell sx={{ fontWeight: 700 }} align="left">
-                End Time
-              </TableCell>
-              <TableCell sx={{ fontWeight: 700 }} align="left">
-                Link
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {events.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell>{row.name}</TableCell>
-                <TableCell component="th" scope="row">
-                  {row.location}
-                </TableCell>
-                <TableCell align="left">{row.startDate}</TableCell>
-                <TableCell align="left">{row.endDate}</TableCell>
-                <TableCell align="left">{row.link}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
-
       <Grid container spacing={2}>
         {events.map((row, index) => (
           <Grid item xs={6} key={index}>
