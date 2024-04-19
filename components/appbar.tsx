@@ -13,8 +13,8 @@ import MenuItem from "@mui/material/MenuItem";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import Link from "next/link";
 
-const pages = ["Home", "Events", "About"];
-const links = ["/", "/events", "/about"];
+const pages = ["Home", "About"];
+const links = ["/", "/about"];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null

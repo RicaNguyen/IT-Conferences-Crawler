@@ -8,9 +8,7 @@ import { client, dbName } from "./db/mongo";
 import { Conferences } from "./api/route";
 import { NUMBER_ITEM_PER_PAGE } from "@/const/const";
 import SearchBox from "@/components/searchBox";
-import DrawerAppBar from "@/components/newappbar";
 import FilterConferencesEvent from "@/components/filter";
-
 export type PageProps = {
   params: Record<string, string>;
   searchParams: Record<string, string>;
@@ -103,16 +101,7 @@ export default async function Home(props: PageProps) {
   console.log("currentPageNumber", currentPageNumber, totalPage);
 
   return (
-    <div
-      style={{
-        backgroundImage: `url(images/background.png)`,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        // height: "100vh",
-        padding: 6,
-      }}
-    >
+    <div>
       <ResponsiveAppBar />
       <Box>
         <Typography

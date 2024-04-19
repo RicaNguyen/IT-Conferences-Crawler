@@ -1,4 +1,4 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient } from "mongodb";
 
 export const uri =
   "mongodb+srv://admin-crawler:L5PHMqATznj8SXl9@it-conferences-crawler.ilt77ty.mongodb.net/?retryWrites=true&w=majority&appName=IT-Conferences-Crawler";
