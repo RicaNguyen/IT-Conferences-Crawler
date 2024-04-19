@@ -43,7 +43,7 @@ export async function GET() {
   const page = await browser.newPage();
   try {
     // lấy 20 page đầu tiên
-    for (let pageNumber = 1; pageNumber <= 1; pageNumber++) {
+    for (let pageNumber = 1; pageNumber <= 20; pageNumber++) {
       // Navigate the page to a URL
       const queryPageNumber = "?page=" + pageNumber;
 
@@ -57,7 +57,7 @@ export async function GET() {
 
       try {
         await page.waitForSelector("#events", {
-          timeout: 120000,
+          timeout: 60000,
           visible: true,
         }); // Adjust the timeout as needed
 
@@ -171,34 +171,42 @@ export async function GET() {
 
     for (let i = 0; i < result.length; i++) {
       if (result[i].link) {
-        console.log("devlink", result[i].link);
-
-        await page.goto(result[i].link, { waitUntil: "domcontentloaded" });
-
-        const rootLink = await page.evaluate(async () => {
-          const aElement = document.querySelector(
-            'a[class="has-text-grey-light"]'
+        try {
+          // console.log("devlink", result[i].link);
+          console.log(
+            `Trying find root link of event: ${i + 1}/${result.length}`
           );
+          // cố gắn đợi 5s nếu không tìm thấy thì skip
+          await page.goto(result[i].link, {
+            waitUntil: "domcontentloaded",
+            timeout: 5000,
+          });
 
-          if (aElement) {
-            const rootLink = aElement.getAttribute("href");
-            return rootLink;
-          } else {
-            const iframeElement = document.querySelector("iframe");
+          const rootLink = await page.evaluate(async () => {
+            const aElement = document.querySelector(
+              'a[class="has-text-grey-light"]'
+            );
 
-            if (iframeElement) {
-              const rootLink = iframeElement.getAttribute("src");
+            if (aElement) {
+              const rootLink = aElement.getAttribute("href");
               return rootLink;
+            } else {
+              const iframeElement = document.querySelector("iframe");
+
+              if (iframeElement) {
+                const rootLink = iframeElement.getAttribute("src");
+                return rootLink;
+              }
+
+              return "";
             }
+          });
 
-            return "";
+          // console.log("rootLink", rootLink);
+          if (rootLink) {
+            result[i].link = rootLink;
           }
-        });
-
-        console.log("rootLink", rootLink);
-        if (rootLink) {
-          result[i].link = rootLink;
-        }
+        } catch (error) {}
       }
     }
 
@@ -209,13 +217,11 @@ export async function GET() {
 
     await browser.close();
 
-    const countryList = _.countBy(result, "country");
     return NextResponse.json(
       {
         message: "Hello World",
         count: result.length,
         tableData: result,
-        countryList,
       },
       { status: 200 }
     );
