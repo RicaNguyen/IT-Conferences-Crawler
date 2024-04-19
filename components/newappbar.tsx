@@ -92,7 +92,7 @@ export default function Test(props: Props) {
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item, index) => (
-              <Link href={links[index]}>
+              <Link href={links[index]} key={index}>
                 <Button key={item} sx={{ color: "black" }}>
                   {item}
                 </Button>

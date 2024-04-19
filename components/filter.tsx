@@ -10,7 +10,6 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
 import { Grid } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -49,22 +48,15 @@ export default function FilterConferencesEvent({
   const theme = useTheme();
   const params = new URLSearchParams(searchParams);
 
-  let country: string[] = [];
+  let filterByCountry: string[] = [];
   if (params.get("countryItem")) {
-    country = params.get("countryItem")?.split(",") || [];
+    filterByCountry = params.get("countryItem")?.split(",") || [];
   }
-  const [filterByCountry, setFilterByCountry] =
-    React.useState<string[]>(country);
-  const handleChangeCountry = (
-    event: SelectChangeEvent<typeof filterByCountry>
-  ) => {
+
+  const handleChangeCountry = (event: SelectChangeEvent<string[]>) => {
     const {
       target: { value },
     } = event;
-    setFilterByCountry(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
 
     if (value) {
       if (typeof value === "string") {
@@ -79,13 +71,15 @@ export default function FilterConferencesEvent({
   };
 
   // timesort
-  const [typeSort, setTypeSort] = useState(params.get("typeSortItem") || "");
+  let typeSortItem: string = "";
+  if (params.get("typeSortItem")) {
+    typeSortItem = params.get("typeSortItem") || "";
+  }
 
-  const handleChangeSort = (event: SelectChangeEvent<typeof typeSort>) => {
+  const handleChangeSort = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
     } = event;
-    setTypeSort(value);
 
     if (value) {
       params.set("typeSortItem", value); // value.join(noi mang boi dau ",")
@@ -130,13 +124,8 @@ export default function FilterConferencesEvent({
       </Grid>
       <Grid item xs={6}>
         <FormControl sx={{ m: 1 }} fullWidth>
-          <InputLabel id="demo-multiple-chip-label">Time</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={typeSort}
-            onChange={handleChangeSort}
-          >
+          <InputLabel id="demo-simple-select-label">Time</InputLabel>
+          <Select value={typeSortItem} onChange={handleChangeSort} label="Time">
             <MenuItem value={""}>All</MenuItem>
             <MenuItem value={"Latest"}>Latest</MenuItem>
             <MenuItem value={"Upcoming"}>Upcoming</MenuItem>

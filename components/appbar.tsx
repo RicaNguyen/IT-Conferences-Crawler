@@ -106,6 +106,7 @@ function ResponsiveAppBar() {
                 style={{
                   textDecoration: "none",
                 }}
+                key={index}
               >
                 <Button
                   key={page}
