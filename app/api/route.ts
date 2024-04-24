@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import * as _ from "lodash";
 import { client, dbName } from "../db/mongo";
+const chromium = require("chrome-aws-lambda");
 
 export type Conferences = {
   id: string;
@@ -31,19 +32,26 @@ const MONTH2CHAR: Record<string, string> = {
 // To handle a GET request to /api
 export async function GET() {
   // Launch the browser and open a new blank page
-
+  // https://github.com/alixaxel/chrome-aws-lambda
   let result: Conferences[] = [];
-  const browser = await puppeteer.launch({
-    // = true, ko launch brower, chạy gầm
-    // = false, launch brower cho việc testing
-    headless: true,
-    executablePath: "../../google-chrome-stable_111.0.5563.64-1_amd64.deb",
+  // const browser = await puppeteer.launch({
+  //   // = true, ko launch brower, chạy gầm
+  //   // = false, launch brower cho việc testing
+  //   args: ["--no-sandbox", "--headless", "--remote-allow-origins=*"],
+  //   headless: true,
+  //   executablePath: "../../google-chrome-stable_111.0.5563.64-1_amd64.deb",
+  // });
+  const browser = await chromium.puppeteer.launch({
+    args: ["--no-sandbox", "--headless", "--remote-allow-origins=*"],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
   });
-
   const page = await browser.newPage();
   try {
     // lấy 20 page đầu tiên
-    for (let pageNumber = 1; pageNumber <= 20; pageNumber++) {
+    for (let pageNumber = 1; pageNumber <= 1; pageNumber++) {
       // Navigate the page to a URL
       const queryPageNumber = "?page=" + pageNumber;
 
