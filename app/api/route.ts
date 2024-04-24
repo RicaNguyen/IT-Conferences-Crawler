@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import * as _ from "lodash";
-import { MongoClient } from "mongodb";
 import { client, dbName } from "../db/mongo";
 
 export type Conferences = {
@@ -38,6 +37,7 @@ export async function GET() {
     // = true, ko launch brower, chạy gầm
     // = false, launch brower cho việc testing
     headless: true,
+    executablePath: "../../google-chrome-stable_111.0.5563.64-1_amd64.deb",
   });
 
   const page = await browser.newPage();
