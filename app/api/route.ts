@@ -1,10 +1,11 @@
 // app/api/route.js 👈🏽
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer";
 import * as _ from "lodash";
 import { client, dbName } from "../db/mongo";
 const chromium = require("chrome-aws-lambda");
-
+// const chromium = require("@sparticuz/chromium-min");
+const puppeteer = require("puppeteer-core");
 export type Conferences = {
   id: string;
   name: string;
@@ -41,13 +42,24 @@ export async function GET() {
   //   headless: true,
   //   executablePath: "../../google-chrome-stable_111.0.5563.64-1_amd64.deb",
   // });
+  // const executablePath = await chromium.executablePath(
+  //   `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+  // );
   const browser = await chromium.puppeteer.launch({
-    args: ["--no-sandbox", "--headless", "--remote-allow-origins=*"],
+    args: [
+      ...chromium.args,
+      "--no-sandbox",
+      "--hide-scrollbars",
+      "--disable-web-security",
+    ],
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
+    // executablePath: await chromium.executablePath(
+    //   `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+    // ),
+    // headless: chromium.headless,
     ignoreHTTPSErrors: true,
   });
+
   const page = await browser.newPage();
   try {
     // lấy 20 page đầu tiên
