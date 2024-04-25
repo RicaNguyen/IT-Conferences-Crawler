@@ -268,14 +268,14 @@ export async function GET() {
 }
 
 // To handle a POST request to /api
-export async function POST() {
-  // Launch the browser and open a new blank page
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+// export async function POST() {
+//   // Launch the browser and open a new blank page
+//   const browser = await puppeteer.launch();
+//   const page = await browser.newPage();
 
-  // Navigate the page to a URL
-  await page.goto("https://developer.chrome.com/");
-  return NextResponse.json({ message: "Hello World" }, { status: 200 });
-}
+//   // Navigate the page to a URL
+//   await page.goto("https://developer.chrome.com/");
+//   return NextResponse.json({ message: "Hello World" }, { status: 200 });
+// }
 
 // Same logic to add a `PATCH`, `DELETE`...
