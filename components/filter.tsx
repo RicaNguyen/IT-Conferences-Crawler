@@ -67,6 +67,8 @@ export default function FilterConferencesEvent({
     } else {
       params.delete("countryItem");
     }
+    // mỗi lần search theo keyword thì cần reset kết quả search về page = 1
+    params.delete("pageNumber");
     replace(`${pathname}?${params.toString()}`);
   };
 

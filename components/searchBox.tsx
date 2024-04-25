@@ -27,9 +27,7 @@ export default function SearchBox() {
     }
     // mỗi lần search theo keyword thì cần reset kết quả search về page = 1
     params.delete("pageNumber");
-    console.log(searchItem);
     replace(`${pathname}?${params.toString()}`);
-    console.log(searchItem);
   };
 
   // https://nextjs.org/learn/dashboard-app/adding-search-and-pagination
