@@ -1,0 +1,10 @@
+https://geshan.com.np/blog/2023/01/nextjs-docker/
+
+
+
+1  |  ⨯ Error: Could not find Chrome (ver. 124.0.6367.60). This can occur if either
+web-1  |  1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+web-1  |  2. your cache path is incorrectly configured (which is: /home/nextjs/.cache/puppeteer).
+
+
+https://github.com/gruckion/puppeteer-running-in-vercel
