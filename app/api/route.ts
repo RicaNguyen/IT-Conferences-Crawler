@@ -1,5 +1,4 @@
 // app/api/route.js 👈🏽
-import * as _ from "lodash";
 import { client, dbName } from "../db/mongo";
 // import puppeteer from "puppeteer";
 
