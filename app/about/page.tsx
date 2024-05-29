@@ -1,3 +1,4 @@
+import { AboutContent } from "@/components/about";
 import ResponsiveAppBar from "@/components/appbar";
 import { Box } from "@mui/material";
 
@@ -12,7 +13,7 @@ export default function About() {
   return (
     <>
       <ResponsiveAppBar />
-      <Box className="team" style={styling}></Box>{" "}
+      <AboutContent></AboutContent>
     </>
   );
 }

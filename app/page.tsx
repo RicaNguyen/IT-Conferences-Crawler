@@ -104,12 +104,7 @@ export default async function Home(props: PageProps) {
     <div>
       <ResponsiveAppBar />
       <Box>
-        <Typography
-          textAlign="center"
-          variant="h1"
-          sx={{ marginBottom: 2 }}
-          color={"black"}
-        >
+        <Typography textAlign="center" variant="h2" sx={{ marginBottom: 2 }}>
           IT CONFERENCES
         </Typography>
         {/* <Typography
@@ -140,13 +135,7 @@ export default async function Home(props: PageProps) {
           <Grid item xs={4} />
           <Grid item xs={4}>
             <>
-              <FormControl
-                fullWidth
-                variant="standard"
-                sx={{
-                  background: "white",
-                }}
-              >
+              <FormControl fullWidth variant="standard">
                 <SearchBox />
               </FormControl>
             </>

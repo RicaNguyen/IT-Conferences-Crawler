@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import Link from "next/link";
+import { ThemeSelector } from "./ColorModeContext";
 
 const pages = ["Home", "About"];
 const links = ["/", "/about"];
@@ -29,18 +30,11 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar
-      position="sticky"
-      style={{
-        backgroundColor: "rgba(0, 0, 0, 0)",
-        backgroundImage: `url(images/background.png)`,
-      }}
-    >
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AllInclusiveIcon
             sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-            style={{ color: "black" }}
           />
           <Typography
             variant="h6"
@@ -52,7 +46,6 @@ function ResponsiveAppBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "black",
               textDecoration: "none",
             }}
           >
@@ -67,7 +60,7 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
             >
-              <MenuIcon style={{ color: "black" }} />
+              <MenuIcon />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -90,9 +83,7 @@ function ResponsiveAppBar() {
               {pages.map((page, index) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Link href={links[index]}>
-                    <Typography textAlign="center" color={"black"}>
-                      {page}
-                    </Typography>
+                    <Typography textAlign="center">{page}</Typography>
                   </Link>
                 </MenuItem>
               ))}
@@ -111,13 +102,14 @@ function ResponsiveAppBar() {
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "black", display: "block" }}
+                  sx={{ my: 2, color: "white", display: "block" }}
                 >
                   {page}
                 </Button>
               </Link>
             ))}
           </Box>
+          <ThemeSelector />
         </Toolbar>
       </Container>
     </AppBar>
